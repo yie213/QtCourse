@@ -1,0 +1,14 @@
+# Qt本地用户配置
+*.pro.user
+*.pro.user.*
+
+# Qt UIC自动生成头文件
+ui_*.h
+
+# 编译输出目录
+build-*
+
+# 编译产物
+*.o
+*.exe
+*.log
