@@ -41,8 +41,10 @@ private:
     QString m_op;
     bool m_waitSecondNum;
     bool m_afterCalc;
+    QString m_expStr;
 
     void processInput(QString text);
     void updateDisplay(QString str);
+    void updateExpLabel();
 };
 #endif // MAINWINDOW_H

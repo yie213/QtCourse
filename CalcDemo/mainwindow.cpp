@@ -13,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent)
     m_op = "";
     m_waitSecondNum = false;
     m_afterCalc = false;
+    m_expStr = ""; //初始化表达式
+    updateExpLabel();
     updateDisplay("0");
 
     QList<QPushButton*> numBtns = {
@@ -53,26 +55,37 @@ void MainWindow::updateDisplay(QString str)
 void MainWindow::processInput(QString text)
 {
     QString curText = ui->display->text();
+
+    //刚算完结果，输入数字则重置屏幕
     if(m_afterCalc){
         if((text >= "0" && text <= "9") || text == "."){
             curText = "0";
             m_afterCalc = false;
         }
     }
+
+    // 等待第二个操作数：清空屏幕用于输入第二个数，⚠️不修改 m_waitSecondNum！！
+    bool needClearInput = m_waitSecondNum;
+    if(needClearInput)
+    {
+        curText = "";
+    }
+
     if(text >= "0" && text <= "9"){
-        if(curText == "0"){
+        if(curText == "0" || curText.isEmpty()){
             curText = text;
         }else{
             curText += text;
         }
     }else if(text == "."){
-        //关键：判断当前字符串已经包含小数点，则不再追加，避免重复小数点
         if(!curText.contains('.')){
+            if(curText.isEmpty()) curText = "0";
             curText += ".";
         }
     }
     updateDisplay(curText);
 }
+
 
 void MainWindow::slot_numClick()
 {
@@ -85,11 +98,74 @@ void MainWindow::slot_dotClick()
     processInput(".");
 }
 
-//运算符、等于暂未实现
-void MainWindow::slot_opClick(){}
-void MainWindow::slot_eqClick(){}
+//等于
+void MainWindow::slot_opClick()
+{
+    QPushButton *btn = qobject_cast<QPushButton*>(sender());
+    QString op = btn->text();
+    QString disp = ui->display->text();
 
-//清除全部状态
+    if(!m_waitSecondNum){
+        //第一次点击运算符，把当前数字+运算符存入表达式
+        m_num1 = disp.toDouble();
+        m_expStr = disp + " " + op + " ";
+    }else{
+        //连续按运算符，先计算上一次
+        slot_eqClick();
+        m_num1 = ui->display->text().toDouble();
+        m_expStr = QString::number(m_num1) + " " + op + " ";
+    }
+    m_op = op;
+    m_waitSecondNum = true;
+    m_afterCalc = false;
+    updateExpLabel(); //刷新上方算式
+}
+
+
+
+void MainWindow::slot_eqClick()
+{
+    if(!m_waitSecondNum || m_op.isEmpty()) return;
+    m_num2 = ui->display->text().toDouble();
+    double res = 0;
+    bool divZero = false;
+
+    if(m_op == "+"){
+        res = m_num1 + m_num2;
+    }else if(m_op == "-"){
+        res = m_num1 - m_num2;
+    }else if(m_op == "×"){   // 中文乘号！！和UI按钮一致
+        res = m_num1 * m_num2;
+    }else if(m_op == "÷"){   // 中文除号！！
+        if(qAbs(m_num2) < 1e-9){
+            divZero = true;
+        }else{
+            res = m_num1 / m_num2;
+        }
+    }
+
+    if(divZero){
+        updateDisplay("错误-除零");
+        m_expStr += QString::number(m_num2) + " =";
+        updateExpLabel();
+        m_waitSecondNum = false;
+        m_afterCalc = true;
+        m_op.clear();
+        return;
+    }
+
+    m_expStr += QString::number(m_num2) + " =";
+    updateExpLabel();
+    updateDisplay(QString::number(res));
+    m_num1 = res;
+    m_afterCalc = true;
+    m_waitSecondNum = false;
+    m_op.clear();
+}
+
+
+
+
 void MainWindow::slot_clearClick()
 {
     m_num1 = 0;
@@ -97,10 +173,12 @@ void MainWindow::slot_clearClick()
     m_op.clear();
     m_waitSecondNum = false;
     m_afterCalc = false;
+    m_expStr.clear(); //清空算式
+    updateExpLabel();
     updateDisplay("0");
 }
 
-//退格功能
+
 void MainWindow::slot_backspaceClick()
 {
     QString cur = ui->display->text();
@@ -112,14 +190,18 @@ void MainWindow::slot_backspaceClick()
     updateDisplay(cur);
 }
 
-//单目运算暂空
+void MainWindow::updateExpLabel()
+{
+    ui->label_exp->setText(m_expStr);
+}
+
+//单目运算空实现
 void MainWindow::slot_signClick(){}
 void MainWindow::slot_squareClick(){}
 void MainWindow::slot_sqrtClick(){}
 void MainWindow::slot_reciprocalClick(){}
 void MainWindow::slot_perClick(){}
 
-//键盘事件暂空
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     QMainWindow::keyPressEvent(event);
