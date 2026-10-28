@@ -54,9 +54,7 @@ void MainWindow::updateDisplay(QString str)
 }
 
 //全部空实现
-void MainWindow::processInput(QString text){
-    Q_UNUSED(text);
-}
+void MainWindow::processInput(QString /*text*/){}
 void MainWindow::slot_numClick(){}
 void MainWindow::slot_dotClick(){}
 void MainWindow::slot_opClick(){}
