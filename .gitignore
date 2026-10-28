@@ -5,10 +5,26 @@
 # Qt UIC自动生成头文件
 ui_*.h
 
-# 编译输出目录
+# 构建输出目录（你已经有这条，保留）
 build-*
 
 # 编译产物
 *.o
+*.obj
 *.exe
+*.dll
+*.a
+*.lib
+
+# 日志、临时文件
 *.log
+*.tmp
+
+# CMake相关（以后用到CMake项目也能用）
+CMakeBuild-*
+CMakeCache.txt
+CMakeFiles/
+
+# qt creator会话、缓存
+*.autosave
+.qtcreator/
