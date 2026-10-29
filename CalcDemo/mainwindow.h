@@ -20,7 +20,6 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
 
 private slots:
-    //空槽声明，尚未实现
     void slot_numClick();
     void slot_dotClick();
     void slot_opClick();
@@ -32,6 +31,7 @@ private slots:
     void slot_sqrtClick();
     void slot_reciprocalClick();
     void slot_perClick();
+    void slot_ceClick();
 
 private:
     Ui::MainWindow *ui;
@@ -41,6 +41,7 @@ private:
     QString m_op;
     bool m_waitSecondNum;
     bool m_afterCalc;
+    bool m_isFirstInputSecond;
     QString m_expStr;
 
     void processInput(QString text);
