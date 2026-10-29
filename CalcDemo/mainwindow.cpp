@@ -45,6 +45,40 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->btn_per,&QPushButton::clicked,this,&MainWindow::slot_perClick);
     connect(ui->btn_ce,&QPushButton::clicked,this,&MainWindow::slot_ceClick);
 
+
+    // 全局样式
+    this->setStyleSheet(R"(
+    QWidget{
+        background-color: #f0f0f0;
+    }
+    QLabel#label_exp{
+        color:#666666;
+        font-size:18px;
+        padding-right:8px;
+    }
+    QLineEdit#display{
+        font-size:48px;
+        border:none;
+        padding-right:8px;
+    }
+    QPushButton{
+        background-color: #ffffff;
+        border-radius:4px;
+        font-size:20px;
+    }
+    QPushButton:pressed{
+        background-color:#dddddd;
+    }
+    QPushButton#btn_eq{
+        background-color:#009688;
+        color:white;
+    }
+    QPushButton#btn_eq:pressed{
+        background-color:#00796b;
+    }
+    )");
+
+
 }
 
 MainWindow::~MainWindow()
