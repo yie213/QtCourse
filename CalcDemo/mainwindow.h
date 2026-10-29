@@ -47,5 +47,6 @@ private:
     void processInput(QString text);
     void updateDisplay(QString str);
     void updateExpLabel();
+    void doOp(QString op);
 };
 #endif // MAINWINDOW_H

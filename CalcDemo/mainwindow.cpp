@@ -91,6 +91,13 @@ void MainWindow::updateDisplay(QString str)
     ui->display->setText(str);
 }
 
+
+void MainWindow::updateExpLabel()
+{
+    ui->label_exp->setText(m_expStr);
+}
+
+
 //操作数输入，禁止重复小数点
 void MainWindow::processInput(QString text)
 {
@@ -125,6 +132,24 @@ void MainWindow::processInput(QString text)
         updateDisplay(curText);
 }
 
+//运算符核心逻辑（按钮、键盘共用）
+void MainWindow::doOp(QString op)
+{
+    QString disp = ui->display->text();
+    if(!m_waitSecondNum){
+        m_num1 = disp.toDouble();
+        m_expStr = disp + " " + op + " ";
+    }else{
+        slot_eqClick();
+        m_num1 = ui->display->text().toDouble();
+        m_expStr = QString::number(m_num1) + " " + op + " ";
+    }
+    m_op = op;
+    m_waitSecondNum = true;
+    m_isFirstInputSecond = true; //标记：接下来是第二个数的首次输入
+    m_afterCalc = false;
+    updateExpLabel();
+}
 
 void MainWindow::slot_numClick()
 {
@@ -141,21 +166,9 @@ void MainWindow::slot_dotClick()
 void MainWindow::slot_opClick()
 {
     QPushButton *btn = qobject_cast<QPushButton*>(sender());
-    QString op = btn->text();
-    QString disp = ui->display->text();
-    if(!m_waitSecondNum){
-        m_num1 = disp.toDouble();
-        m_expStr = disp + " " + op + " ";
-    }else{
-        slot_eqClick();
-        m_num1 = ui->display->text().toDouble();
-        m_expStr = QString::number(m_num1) + " " + op + " ";
-    }
-    m_op = op;
-    m_waitSecondNum = true;
-    m_isFirstInputSecond = true; //标记：接下来是第二个数的首次输入
-    m_afterCalc = false;
-    updateExpLabel();
+        if(btn == nullptr) return;
+        QString op = btn->text();
+        doOp(op);
 }
 
 
@@ -302,12 +315,49 @@ void MainWindow::slot_perClick()
 }
 
 
+// ========== 键盘事件==========
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-    QMainWindow::keyPressEvent(event);
-}
-
-void MainWindow::updateExpLabel()
-{
-    ui->label_exp->setText(m_expStr);
+    int key = event->key();
+    if(key >= Qt::Key_0 && key <= Qt::Key_9)
+    {
+        QString numStr = QString::number(key - Qt::Key_0);
+        processInput(numStr);
+    }
+    else if(key == Qt::Key_Plus)
+    {
+        doOp("+");
+    }
+    else if(key == Qt::Key_Minus)
+    {
+        doOp("-");
+    }
+    else if(key == Qt::Key_Asterisk)
+    {
+        doOp("×");
+    }
+    else if(key == Qt::Key_Slash)
+    {
+        doOp("÷");
+    }
+    else if(key == Qt::Key_Equal || key == Qt::Key_Return || key == Qt::Key_Enter)
+    {
+        slot_eqClick();
+    }
+    else if(key == Qt::Key_Backspace)
+    {
+        slot_backspaceClick();
+    }
+    else if(key == Qt::Key_Delete)
+    {
+        slot_clearClick();
+    }
+    else if(key == Qt::Key_Period)
+    {
+        processInput(".");
+    }
+    else
+    {
+        QMainWindow::keyPressEvent(event);
+    }
 }
