@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/AutoLineWrap.png</file>
+        <file>images/Copy.png</file>
+        <file>images/Cut.png</file>
+        <file>images/Find.png</file>
+        <file>images/Font.png</file>
+        <file>images/New.png</file>
+        <file>images/Notepad.jpg</file>
+        <file>images/Open.png</file>
+        <file>images/Paste.png</file>
+        <file>images/Redo.png</file>
+        <file>images/Repalce.png</file>
+        <file>images/Save.png</file>
+        <file>images/SaveAs.png</file>
+        <file>images/ShowLineNumber.png</file>
+        <file>images/StatusBar.png</file>
+        <file>images/ToolBar.png</file>
+        <file>images/Undo.png</file>
+    </qresource>
+</RCC>
