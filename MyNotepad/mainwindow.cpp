@@ -123,8 +123,65 @@ void MainWindow::onFindNext(QString keyword, bool caseSensitive, bool searchDown
 
 void MainWindow::on_actionReplace_triggered()
 {
-    ReplaceDialog dlg;
-    dlg.exec();
+    if(!m_replaceDlg)
+        {
+            m_replaceDlg = new ReplaceDialog(this);
+            connect(m_replaceDlg, &ReplaceDialog::findNext, this, &MainWindow::onReplaceFind);
+            connect(m_replaceDlg, &ReplaceDialog::replaceOne, this, &MainWindow::onReplaceOne);
+            connect(m_replaceDlg, &ReplaceDialog::replaceAll, this, &MainWindow::onReplaceAll);
+        }
+        m_replaceDlg->show();
+        m_replaceDlg->raise();
+        m_replaceDlg->activateWindow();
+}
+
+void MainWindow::onReplaceFind(QString keyword, bool caseSensitive, bool searchDown)
+{
+    if(keyword.isEmpty()) return;
+    QTextDocument::FindFlags flag;
+    if(caseSensitive) flag |= QTextDocument::FindCaseSensitively;
+    if(!searchDown) flag |= QTextDocument::FindBackward;
+
+    bool found = ui->textEdit->find(keyword, flag);
+    if(!found)
+    {
+        QMessageBox::information(this, tr("查找"), tr("未找到【%1】").arg(keyword));
+    }
+}
+
+void MainWindow::onReplaceOne(QString keyword, QString replaceText, bool caseSensitive, bool searchDown)
+{
+    QTextCursor cur = ui->textEdit->textCursor();
+    //当前选中内容等于目标文本才替换
+    if(cur.hasSelection())
+    {
+        QString selected = cur.selectedText();
+        Qt::CaseSensitivity cs = caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive;
+        if(selected.compare(keyword, cs) == 0)
+        {
+            cur.insertText(replaceText);
+            ui->textEdit->setTextCursor(cur);
+        }
+    }
+    //替换完自动查找下一处
+    onReplaceFind(keyword, caseSensitive, searchDown);
+}
+
+void MainWindow::onReplaceAll(QString keyword, QString replaceText, bool caseSensitive)
+{
+    if(keyword.isEmpty()) return;
+    QTextDocument::FindFlags flag;
+    if(caseSensitive) flag |= QTextDocument::FindCaseSensitively;
+
+    ui->textEdit->moveCursor(QTextCursor::Start); //回到文档开头
+    int count = 0;
+    while(ui->textEdit->find(keyword, flag))
+    {
+        QTextCursor cur = ui->textEdit->textCursor();
+        cur.insertText(replaceText);
+        count++;
+    }
+    QMessageBox::information(this, tr("全部替换"), tr("一共替换了 %1 处").arg(count));
 }
 
 void MainWindow::on_actionNew_triggered()

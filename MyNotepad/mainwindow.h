@@ -5,6 +5,7 @@
 #include <QLabel>
 
 #include "finddialog.h"
+#include "replacedialog.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -25,6 +26,9 @@ private slots:
     void onFindNext(QString keyword, bool caseSensitive, bool searchDown);
 
     void on_actionReplace_triggered();
+    void onReplaceFind(QString keyword, bool caseSensitive, bool searchDown);
+    void onReplaceOne(QString keyword, QString replaceText, bool caseSensitive, bool searchDown);
+    void onReplaceAll(QString keyword, QString replaceText, bool caseSensitive);
 
     void on_actionNew_triggered();
     void on_actionOpen_triggered();
@@ -45,6 +49,7 @@ private slots:
 
     void updateEditActionEnable();
 
+
 private:
     Ui::MainWindow *ui;
 
@@ -55,5 +60,6 @@ private:
     bool m_isModified;
 
     FindDialog* m_findDlg = nullptr;
+    ReplaceDialog* m_replaceDlg = nullptr;
 };
 #endif // MAINWINDOW_H
