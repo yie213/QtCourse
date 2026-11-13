@@ -62,6 +62,19 @@ MainWindow::MainWindow(QWidget *parent)
     //程序启动初始化一次按钮状态
     updateEditActionEnable();
 
+
+    connect(ui->textEdit, &QPlainTextEdit::undoAvailable, this, [&](bool b){
+        updateUndoRedoEnable(b, ui->textEdit->document()->isRedoAvailable());
+    });
+    connect(ui->textEdit, &QPlainTextEdit::redoAvailable, this, [&](bool b){
+        updateUndoRedoEnable(ui->textEdit->document()->isUndoAvailable(), b);
+    });
+
+    //初始化一次撤销重做按钮状态
+    updateUndoRedoEnable(ui->textEdit->document()->isUndoAvailable(),
+                         ui->textEdit->document()->isRedoAvailable());
+
+
     //修改编辑框光标颜色为蓝色
     ui->textEdit->setStyleSheet(R"(
     QPlainTextEdit {
@@ -408,3 +421,49 @@ void MainWindow::updateEditActionEnable()
     ui->actionPaste->setEnabled(hasClipText);
 }
 
+// ========== commit12 新增代码开始 ==========
+//退出菜单：actionExit
+void MainWindow::on_actionExit_triggered()
+{
+    //调用系统关闭事件，会自动执行closeEvent里面的未保存判断
+    this->close();
+}
+
+//更新撤销、重做Action使能
+void MainWindow::updateUndoRedoEnable(bool canUndo, bool canRedo)
+{
+    ui->actionUndo->setEnabled(canUndo);
+    ui->actionRedo->setEnabled(canRedo);
+}
+
+//重写窗口关闭事件：右上角X、actionExit退出都会进入这里
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if(m_isModified)
+    {
+        QMessageBox::StandardButton ret = QMessageBox::question(this,tr("提示"),
+                                     tr("文档已经修改，是否要保存更改？"),
+                                     QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+        if(ret == QMessageBox::Yes)
+        {
+            on_actionSave_triggered();
+            //保存完成之后再退出
+            event->accept();
+        }
+        else if(ret == QMessageBox::No)
+        {
+            //不保存，直接退出
+            event->accept();
+        }
+        else if(ret == QMessageBox::Cancel)
+        {
+            //取消关闭，拦截窗口退出
+            event->ignore();
+            return;
+        }
+    }
+    else
+    {
+        event->accept();
+    }
+}

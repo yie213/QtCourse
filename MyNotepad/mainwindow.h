@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QLabel>
+#include <QCloseEvent>
 
 #include "finddialog.h"
 #include "replacedialog.h"
@@ -49,6 +50,11 @@ private slots:
 
     void updateEditActionEnable();
 
+    void on_actionExit_triggered();
+    void updateUndoRedoEnable(bool canUndo, bool canRedo);
+
+protected:
+    virtual void closeEvent(QCloseEvent *event) override;
 
 private:
     Ui::MainWindow *ui;
