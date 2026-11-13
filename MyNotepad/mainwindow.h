@@ -23,10 +23,21 @@ private slots:
 
     void on_actionReplace_triggered();
 
+    void on_actionNew_triggered();
+    void on_actionOpen_triggered();
+    void on_actionSave_triggered();
+    void on_actionSaveAs_triggered();
+    // 文本内容变化触发，用来更新修改标记
+    void onTextChanged();
+
+
 private:
     Ui::MainWindow *ui;
 
     QLabel statusCursorLabel;
-    QLabel statusLabel;
+    QLabel statusLabel;  
+
+    QString m_curFilePath;
+    bool m_isModified;
 };
 #endif // MAINWINDOW_H
