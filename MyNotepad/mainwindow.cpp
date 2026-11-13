@@ -421,7 +421,6 @@ void MainWindow::updateEditActionEnable()
     ui->actionPaste->setEnabled(hasClipText);
 }
 
-// ========== commit12 新增代码开始 ==========
 //退出菜单：actionExit
 void MainWindow::on_actionExit_triggered()
 {

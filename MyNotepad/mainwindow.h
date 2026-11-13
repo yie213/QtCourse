@@ -7,6 +7,7 @@
 
 #include "finddialog.h"
 #include "replacedialog.h"
+#include "codeeditor.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
