@@ -61,6 +61,19 @@ MainWindow::MainWindow(QWidget *parent)
 
     //程序启动初始化一次按钮状态
     updateEditActionEnable();
+
+    //修改编辑框光标颜色为蓝色
+    ui->textEdit->setStyleSheet(R"(
+    QPlainTextEdit {
+        color: black;
+        background-color: white;
+        selection-color: white;
+        selection-background-color: #217ad9;
+        /* 设置闪烁输入光标（插入光标）蓝色 */
+        qproperty-cursorColor: #0044ff;
+    }
+    )");
+
 }
 
 MainWindow::~MainWindow()
@@ -78,10 +91,35 @@ void MainWindow::on_actionAbout_triggered()
 
 void MainWindow::on_actionFind_triggered()
 {
-    FindDialog dlg;
-    dlg.exec();
+
+
+    if(!m_findDlg)
+        {
+            m_findDlg = new FindDialog(this);
+            connect(m_findDlg, &FindDialog::findNext, this, &MainWindow::onFindNext);
+        }
+        m_findDlg->show();
+        m_findDlg->raise();
+        m_findDlg->activateWindow();
 }
 
+void MainWindow::onFindNext(QString keyword, bool caseSensitive, bool searchDown)
+{
+    if(keyword.isEmpty())
+        return;
+
+    QTextDocument::FindFlags flag = {};
+    if(caseSensitive)
+        flag |= QTextDocument::FindCaseSensitively;
+    if(!searchDown)
+        flag |= QTextDocument::FindBackward;
+
+    bool isFound = ui->textEdit->find(keyword, flag);
+    if(!isFound)
+    {
+        QMessageBox::information(this, tr("查找"), tr("未找到【%1】").arg(keyword));
+    }
+}
 
 void MainWindow::on_actionReplace_triggered()
 {
@@ -312,3 +350,4 @@ void MainWindow::updateEditActionEnable()
     //剪贴板有文字，粘贴才可用
     ui->actionPaste->setEnabled(hasClipText);
 }
+

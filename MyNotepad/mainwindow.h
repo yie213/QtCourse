@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QLabel>
 
+#include "finddialog.h"
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -20,6 +22,7 @@ private slots:
     void on_actionAbout_triggered();
 
     void on_actionFind_triggered();
+    void onFindNext(QString keyword, bool caseSensitive, bool searchDown);
 
     void on_actionReplace_triggered();
 
@@ -50,5 +53,7 @@ private:
 
     QString m_curFilePath;
     bool m_isModified;
+
+    FindDialog* m_findDlg = nullptr;
 };
 #endif // MAINWINDOW_H
