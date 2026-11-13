@@ -20,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->actionAutoLineWrap->setChecked(ui->textEdit->lineWrapMode() == QPlainTextEdit::WidgetWidth);
+    ui->actionToolBar->setChecked(true);
+    ui->actionStatusBar->setChecked(true);
 
     statusLabel.setMaximumWidth(150);
     statusLabel.setText("length: " + QString::number(0) + "   lines: " + QString::number(1));
@@ -44,6 +46,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionCopy, &QAction::triggered, ui->textEdit, &QPlainTextEdit::copy);
     connect(ui->actionPaste, &QAction::triggered, ui->textEdit, &QPlainTextEdit::paste);
     connect(ui->actionSelectAll, &QAction::triggered, ui->textEdit, &QPlainTextEdit::selectAll);
+
+    connect(ui->textEdit, &QPlainTextEdit::textChanged, this, &MainWindow::updateStatusInfo);
+    connect(ui->textEdit, &QPlainTextEdit::cursorPositionChanged, this, &MainWindow::updateStatusInfo);
+
+    updateStatusInfo();
 }
 
 MainWindow::~MainWindow()
@@ -249,4 +256,34 @@ void MainWindow::on_actionEditorBackgroundColor_triggered()
     {
         ui->textEdit->setStyleSheet(QString("QPlainTextEdit { background-color: %1; }").arg(color.name()));
     }
+}
+
+
+void MainWindow::updateStatusInfo()
+{
+    //获取全部文本
+    QString allText = ui->textEdit->toPlainText();
+    int textLength = allText.length();
+    int lineCount = ui->textEdit->blockCount();
+
+    //获取光标位置
+    QTextCursor cur = ui->textEdit->textCursor();
+    int lineNo = cur.blockNumber() + 1;
+    int colNo = cur.positionInBlock() + 1;
+
+    //更新状态栏两个标签
+    statusLabel.setText(QString("length: %1   lines: %2").arg(textLength).arg(lineCount));
+    statusCursorLabel.setText(QString("Ln: %1   Col: %2").arg(lineNo).arg(colNo));
+}
+
+void MainWindow::on_actionToolBar_triggered()
+{
+    bool visible = ui->actionToolBar->isChecked();
+    ui->toolBar->setVisible(visible);
+}
+
+void MainWindow::on_actionStatusBar_triggered()
+{
+    bool visible = ui->actionStatusBar->isChecked();
+    ui->statusbar->setVisible(visible);
 }

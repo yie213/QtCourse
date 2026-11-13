@@ -36,6 +36,9 @@ private slots:
     void on_actionFontBackgroundColor_triggered();
     void on_actionEditorBackgroundColor_triggered();
 
+    void updateStatusInfo();
+    void on_actionToolBar_triggered();
+    void on_actionStatusBar_triggered();
 
 private:
     Ui::MainWindow *ui;
