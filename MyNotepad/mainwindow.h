@@ -30,6 +30,12 @@ private slots:
     // 文本内容变化触发，用来更新修改标记
     void onTextChanged();
 
+    void on_actionAutoLineWrap_triggered();
+    void on_actionFont_triggered();
+    void on_actionFontColor_triggered();
+    void on_actionFontBackgroundColor_triggered();
+    void on_actionEditorBackgroundColor_triggered();
+
 
 private:
     Ui::MainWindow *ui;
