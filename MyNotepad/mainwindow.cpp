@@ -13,6 +13,9 @@
 #include <QColorDialog>
 #include <QTextCharFormat>
 
+#include <QClipboard>
+#include <QGuiApplication>
+
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -51,6 +54,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->textEdit, &QPlainTextEdit::cursorPositionChanged, this, &MainWindow::updateStatusInfo);
 
     updateStatusInfo();
+
+    connect(ui->textEdit, &QPlainTextEdit::selectionChanged, this, &MainWindow::updateEditActionEnable);
+    //剪贴板内容发生变化时，更新粘贴按钮状态
+    connect(QGuiApplication::clipboard(),&QClipboard::dataChanged,this,&MainWindow::updateEditActionEnable);
+
+    //程序启动初始化一次按钮状态
+    updateEditActionEnable();
 }
 
 MainWindow::~MainWindow()
@@ -286,4 +296,19 @@ void MainWindow::on_actionStatusBar_triggered()
 {
     bool visible = ui->actionStatusBar->isChecked();
     ui->statusbar->setVisible(visible);
+}
+
+
+void MainWindow::updateEditActionEnable()
+{
+    //是否存在选中文本
+    bool hasSelection = ui->textEdit->textCursor().hasSelection();
+    bool hasClipText = !QGuiApplication::clipboard()->text().isEmpty();
+
+    //有选中，剪切复制才可用，否则置灰
+    ui->actionCut->setEnabled(hasSelection);
+    ui->actionCopy->setEnabled(hasSelection);
+
+    //剪贴板有文字，粘贴才可用
+    ui->actionPaste->setEnabled(hasClipText);
 }

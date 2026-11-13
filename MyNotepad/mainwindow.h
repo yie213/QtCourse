@@ -40,6 +40,8 @@ private slots:
     void on_actionToolBar_triggered();
     void on_actionStatusBar_triggered();
 
+    void updateEditActionEnable();
+
 private:
     Ui::MainWindow *ui;
 
