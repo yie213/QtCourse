@@ -33,6 +33,12 @@ MainWindow::MainWindow(QWidget *parent)
     // 绑定文本编辑框内容变化信号
     connect(ui->textEdit, &QPlainTextEdit::textChanged, this, &MainWindow::onTextChanged);
 
+    connect(ui->actionUndo, &QAction::triggered, ui->textEdit, &QPlainTextEdit::undo);
+    connect(ui->actionRedo, &QAction::triggered, ui->textEdit, &QPlainTextEdit::redo);
+    connect(ui->actionCut, &QAction::triggered, ui->textEdit, &QPlainTextEdit::cut);
+    connect(ui->actionCopy, &QAction::triggered, ui->textEdit, &QPlainTextEdit::copy);
+    connect(ui->actionPaste, &QAction::triggered, ui->textEdit, &QPlainTextEdit::paste);
+    connect(ui->actionSelectAll, &QAction::triggered, ui->textEdit, &QPlainTextEdit::selectAll);
 }
 
 MainWindow::~MainWindow()
